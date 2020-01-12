@@ -20,7 +20,7 @@
                  Close
                </v-btn>
              </v-snackbar>
-    <h1 class="headline">Available Courses</h1>
+    <h1 class="headline">Course Details</h1>
 
       <v-list>
             <v-card   v-for="course in courses"
@@ -33,9 +33,9 @@
                 <v-list-item three-line>
                   <v-list-item-content>
                     <div class="overline mb-4">OVERLINE</div>
-                    <v-list-item-title class="headline mb-1">{{course.coursetitle}}</v-list-item-title>
-                    <v-list-item-subtitle>{{course.coursedescription}}</v-list-item-subtitle>
-                    <v-list-item-subtitle v-text="course.coursecreateddate"></v-list-item-subtitle>
+                    <v-list-item-title class="headline mb-1">{{course.pdftitle}}</v-list-item-title>
+                    <v-list-item-subtitle>{{course.pdfdescription}}</v-list-item-subtitle>
+                    <v-list-item-subtitle v-text="course.pdfcreateddate"></v-list-item-subtitle>
 
                   </v-list-item-content>
 
@@ -43,9 +43,9 @@
                     tile
                     size="100"
                     color="grey"
-                   v-bind:src="course.courseimage"
+                   v-bind:src="course.pdfcover"
                   >
-                        <v-img :src="course.courseimage"
+                        <v-img :src="course.pdfcover"
                         lazy-src="https://picsum.photos/id/11/100/60"
                          aspect-ratio="1"
                          class="grey lighten-2"
@@ -176,7 +176,7 @@
 import { uuid } from 'vue-uuid';
 import firebase from 'firebase';
 export default{
-  name:'courses',
+  name:'viewcourse',
 
   methods:{
      deleteButtonClicked(){
@@ -191,12 +191,14 @@ export default{
        this.dialog=false;
        this.dialogtext='';
      },
-     deleteItem(){
+     deleteItem(course){
+
        this.dialogtext='';
        this.dialog=false;
-       firebase.database().ref().child('courses/'+this.clickeditem.id).set(null).then(snap=>{
+       firebase.database().ref().child('pdfs/').child(this.$route.params.course_id).child(this.clickeditem.id).set(null).then(snap=>{
          this.showSnack("green","deleted course");
-         this.courses.splice(this.index,1);
+         let i = courses.map(item => item.id).indexOf(this.clickeditem.id) // find index of your object
+         courses.splice(i, 1)
        });
      },
      showSnack(color,text){
@@ -237,15 +239,16 @@ export default{
   }
   },
   mounted(){
-    firebase.database().ref().child('courses').once('value', (courses) => {
+    firebase.database().ref().child('pdfs').child(this.$route.params.course_id).once('value', (courses) => {
         courses.forEach((course) => {
           console.log(course);
           this.courses.push({
             id: course.child('id').val(),
-            courseimage:course.child('courseimage').val(),
-            coursetitle: course.child('coursetitle').val(),
-            coursedescription: course.child('coursedescription').val(),
-            coursecreateddate:new Date(course.child('coursecreateddate').val()).toDateString(),
+            pdftitle:course.child('pdftitle').val(),
+            pdf:course.child('pdf').val(),
+            pdfcover: course.child('pdfcover').val(),
+            pdfdescription: course.child('pdfdescription').val(),
+            pdfcreateddate:new Date(course.child('pdfcreateddate').val()).toDateString(),
           })
 
         })
