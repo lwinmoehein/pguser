@@ -21,7 +21,7 @@
                  Close
                </v-btn>
              </v-snackbar>
-    <h1 class="headline">[[Add New PDF]]</h1>
+    <h1 class="headline">[[Add New Audio]]</h1>
     <v-btn  @click="$router.go(-1)" bottom
                 dark
                 fab
@@ -48,10 +48,10 @@
           md="4"
         >
           <v-text-field
-            v-model="pdftitle"
+            v-model="videotitle"
             :rules="nameRules"
             :counter="30"
-            label="PDF Title"
+            label="Audio Title"
             solo
             required
           ></v-text-field>
@@ -64,29 +64,15 @@
         >
           <v-file-input
           prepend-icon="mdi-book"
-           accept=".pdf"
-           label="PDF FIle"
-           v-model="pdf"
+           accept=".mp3"
+           label="AudioFile"
+           v-model="video"
            show-size
            solo></v-file-input>
 
         </v-col>
        </v-row>
-       <v-row>
-         <v-col
-          cols="12"
-          md="4"
-        >
-          <v-file-input
-          prepend-icon="mdi-camera"
-           accept="image/*"
-           label="Cover Image"
-           v-model="pdfcover"
-           show-size
-           solo></v-file-input>
 
-        </v-col>
-       </v-row>
        <v-row>
          <v-col
           cols="12"
@@ -94,9 +80,9 @@
         >
         <v-textarea
          solo
-         v-model="pdfdescription"
+         v-model="videodescription"
          name="input-7-4"
-         label="PDF Description"
+         label="Audio Description"
        ></v-textarea>
         </v-col>
        </v-row>
@@ -105,7 +91,7 @@
           cols="12"
           md="4"
         >
-        <v-btn small color="primary" v-on:click="uploadNewPDF">Create New PDF</v-btn>
+        <v-btn small color="primary" v-on:click="uploadNewAudio">Upload New Audio</v-btn>
 
       </v-col>
        </v-row>
@@ -120,54 +106,50 @@
 import { uuid } from 'vue-uuid';
 import firebase from 'firebase';
 export default{
-  name:'AddPDF',
+  name:'AddAudio',
   data(){
     return{
       courseid:null,
       uuid: uuid.v1(),
-      pdftitle:null,
-      pdfdescription:null,
-      pdfcover:null,
-      pdf:null,
+      videotitle:null,
+      videodescription:null,
+      video:null,
       coverUrl:null,
-      pdfUrl:null,
+      videoUrl:null,
       loading:false,
       snackbar: false,
       color:'green',
-      text: 'Success, created a new PDF!!',
+      text: 'Success, uploaded a new audio!!',
 
     }
   },
   methods:{
-    uploadNewPDF(){
-      if(!(this.pdftitle==null || this.pdfdescription==null ||this.pdf==null)){
+    uploadNewAudio(){
+      if(!(this.videotitle==null || this.videodescription==null ||this.video==null)){
         this.loading=true;
 
-        var file =this.pdfcover;
-        firebase.storage().ref('pdfs/pdfthumbs/'+uuid.v4()+'.jpg').put(file).then(snapshot=> {
-        snapshot.ref.getDownloadURL().then(downloadURL=> {
-          this.coverUrl=downloadURL;
 
-          var pdffile =this.pdf;
-          firebase.storage().ref('pdfs/pdfs/'+uuid.v4()+'.pdf').put(pdffile).then(snapshot=> {
-          snapshot.ref.getDownloadURL().then(pdUrl=> {
-            this.pdfUrl=pdUrl;
+          this.coverUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Icons8_flat_audio_file.svg/1024px-Icons8_flat_audio_file.svg.png";
+
+          var videofile =this.video;
+          firebase.storage().ref('audio/audios/'+uuid.v4()+'.mp3').put(videofile).then(snapshot=> {
+          snapshot.ref.getDownloadURL().then(vUrl=> {
+            this.videoUrl=vUrl;
             var key=firebase.database().ref().child('courseitems/').child(this.$route.params.course_id).push().key;
             firebase.database().ref().child('courseitems/').child(this.$route.params.course_id).child(key).set({
               id:key,
-              title:this.pdftitle,
+              title:this.videotitle,
               cover:this.coverUrl,
-              file:this.pdfUrl,
-              description:this.pdfdescription,
+              file:this.videoUrl,
+              description:this.videodescription,
               date:firebase.database.ServerValue.TIMESTAMP,
-              type:"pdf"
+              type:"audio"
             });
             this.loading=false;
-            this.showSnack("green","new pdf created");
-          });
+            this.showSnack("green","new audio uploaded");
           });
 
-        });
+
         });
 
 

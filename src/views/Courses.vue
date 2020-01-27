@@ -49,6 +49,7 @@
                         lazy-src="https://picsum.photos/id/11/100/60"
                          aspect-ratio="1"
                          class="grey lighten-2"
+
                         >
                         <template v-slot:placeholder>
                                <v-row
@@ -64,11 +65,39 @@
                 </v-list-item>
 
                 <v-card-actions>
-                  <v-btn text  @click="updateSelectedItem(course)">Delete</v-btn>
-                  <v-btn text  @click="openEditDialog(course)">Edit</v-btn>
-                  <router-link class="secondary-content" v-bind:to="{ name: 'viewcourse', params: { course_id: course.id }}"><i class="fa fa-eye"></i></router-link>
-                  <router-link class="secondary-content" v-bind:to="{ name: 'addpdf', params: { course_id: course.id }}"><i class="fa fa-plus"></i></router-link>
+                  <v-btn class="ma-1" color="primary" dark text  @click="updateSelectedItem(course)">Delete</v-btn>
+                  <v-btn class="ma-1" color="primary" dark text  @click="openEditDialog(course)">Edit</v-btn>
+                  <v-btn class="ma-1"  > <router-link class="secondary-content" v-bind:to="{ name: 'viewcourse', params: { course_id: course.id }}">View Course</router-link></v-btn>
+                  <!-- <router-link class="secondary-content" v-bind:to="{ name: 'addpdf', params: { course_id: course.id }}"><i class="fa fa-plus"></i></router-link> -->
+                  <!---add menus -->
 
+                    <v-menu  top offset-y >
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        color="primary"
+                        dark
+                        v-on="on"
+                      >
+                        Add
+                      </v-btn>
+                    </template>
+
+                    <v-list>
+                      <v-list-item color="primary"
+                        @click="addPdfClicked">
+                        <router-link class="secondary-content" v-bind:to="{ name: 'addpdf', params: { course_id: course.id }}">Add PDF</router-link>
+
+                      </v-list-item>
+                      <v-list-item color="primary"
+                        @click="addVideoClicked">
+                        <router-link class="secondary-content" v-bind:to="{ name: 'addvideo', params: { course_id: course.id }}">Add Video</router-link>
+                      </v-list-item>
+                      <v-list-item color="primary"
+                        @click="addAudioClicked">
+                        <router-link class="secondary-content" v-bind:to="{ name: 'addaudio', params: { course_id: course.id }}">Add Audio</router-link>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
                 </v-card-actions>
               </v-card>
 
@@ -169,7 +198,17 @@
         </v-card>
       </v-dialog>
     </v-row>
-
+    <v-btn      bottom
+                dark
+                fab
+                right
+                class="ma-12"
+                fixed
+                @click="onAddBtnClicked"
+                color="primary"
+              >
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
 </v-container>
 </template>
 <script>
@@ -179,6 +218,9 @@ export default{
   name:'courses',
 
   methods:{
+     onAddBtnClicked(){
+       this.$router.replace('addcourse');
+     },
      deleteButtonClicked(){
        this.dialogtext+=this.clickeditem.coursetitle;
        this.dialog=true
@@ -188,7 +230,29 @@ export default{
        this.deleteButtonClicked();
      },
      EditCourse(course){
-       
+       this.loading=true;
+       if(!(this.courseimage==null || this.coursetitle==null ||this.coursedescription==null)){
+         this.loading=true;
+         var file =this.courseimage;
+         firebase.storage().ref('courses/thumbs/'+uuid.v4()+'.jpg').put(file).then(snapshot=> {
+         this.loading=false;
+         snapshot.ref.getDownloadURL().then(downloadURL=> {
+           this.courses[this.courseids.indexOf(this.clickeditem.id)].courseimage=downloadURL;
+           firebase.database().ref().child('courses/'+this.clickeditem.id).update({
+             coursetitle:this.coursetitle,
+             courseimage:downloadURL,
+             coursedescription:this.coursedescription,
+             coursecreateddate:firebase.database.ServerValue.TIMESTAMP
+           });
+           this.loading=false;
+           this.editdialog=false;
+           this.showSnack("green","course edited");
+           });
+         });
+
+       }else{
+         this.showSnack("red","Insert form correctly")
+       }
      }
      ,
      cancelDialog(){
@@ -199,7 +263,7 @@ export default{
        this.dialogtext='';
        this.dialog=false;
        firebase.database().ref().child('courses/'+this.clickeditem.id).set(null).then(snap=>{
-         firebase.database().ref().child('pdfs/'+this.clickeditem.id).set(null).then(snap=>{
+         firebase.database().ref().child('courseitems/'+this.clickeditem.id).set(null).then(snap=>{
            this.showSnack("green","deleted course");
            this.courses.splice(this.courseids.indexOf(this.clickeditem.id),1);
          });
@@ -215,7 +279,6 @@ export default{
      timestampToDate(timestamp){
        var offsetVal = timestamp || 0;
        var serverTime = Date.now() + offsetVal;
-       console.log(serverTime);
        return serverTime;
      },
      openEditDialog(course){
@@ -223,7 +286,8 @@ export default{
        this.clickeditem=course;
        this.coursetitle=course.coursetitle;
        this.coursedescription=course.coursedescription;
-
+       this.courseimagetemp=course.courseimage;
+       this.clickeditem=course;
      },
 
   },
@@ -241,7 +305,15 @@ export default{
       coursetitle:null,
       coursedescription:null,
       courseimage:null,
+      courseimagetemp:null,
       courseids:[],
+      loading:false,
+      items: [
+       { title: 'add pdf' },
+       { title: 'add audio' },
+       { title: 'add video' },
+     ],
+
   }
   },
   mounted(){

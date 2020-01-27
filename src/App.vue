@@ -19,7 +19,7 @@
   </v-app>
 </template>
 
-<script lang="ts">
+<script >
   import { Component, Vue } from 'vue-property-decorator';
   import TopToolbar from './components/TopToolbar.vue';
   import BottomNav from './components/BottomNav.vue';

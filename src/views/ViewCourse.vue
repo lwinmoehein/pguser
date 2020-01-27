@@ -22,6 +22,14 @@
              </v-snackbar>
     <h1 class="headline">Course Details</h1>
 
+    <v-btn  @click="$router.go(-1)" bottom
+                dark
+                fab
+                right
+                class="ma-12"
+                fixed color="primary">
+         <v-icon dark>mdi-arrow-left</v-icon>
+       </v-btn>
       <v-list>
             <v-card   v-for="course in courses"
               :key="course.id"
@@ -32,7 +40,8 @@
               >
                 <v-list-item three-line>
                   <v-list-item-content>
-                    <div class="overline mb-4">Ebook(pdf)</div>
+
+                    <div class="overline mb-4" >{{course.type}}</div>
                     <v-list-item-title class="headline mb-1">{{course.pdftitle}}</v-list-item-title>
                     <v-list-item-subtitle>{{course.pdfdescription}}</v-list-item-subtitle>
                     <v-list-item-subtitle v-text="course.pdfcreateddate"></v-list-item-subtitle>
@@ -65,7 +74,6 @@
 
                 <v-card-actions>
                   <v-btn text  @click="updateSelectedItem(course)">Delete</v-btn>
-                  <v-btn text  @click="openEditDialog(course)">Edit</v-btn>
                   <router-link class="secondary-content" v-bind:to="{ name: 'viewcourse', params: { course_id: course.id }}"><i class="fa fa-eye"></i></router-link>
 
                 </v-card-actions>
@@ -194,7 +202,7 @@ export default{
 
        this.dialogtext='';
        this.dialog=false;
-       firebase.database().ref().child('pdfs/').child(this.$route.params.course_id).child(this.clickeditem.id).set(null).then(snap=>{
+       firebase.database().ref().child('courseitems/').child(this.$route.params.course_id).child(this.clickeditem.id).set(null).then(snap=>{
          this.showSnack("green","deleted course");
          this.courses.splice(this.pdfids.indexOf(this.clickeditem.id),1);
 
@@ -209,7 +217,6 @@ export default{
      timestampToDate(timestamp){
        var offsetVal = timestamp || 0;
        var serverTime = Date.now() + offsetVal;
-       console.log(serverTime);
        return serverTime;
      },
      openEditDialog(course){
@@ -239,16 +246,16 @@ export default{
   }
   },
   mounted(){
-    firebase.database().ref().child('pdfs').child(this.$route.params.course_id).once('value', (courses) => {
+    firebase.database().ref().child('courseitems').child(this.$route.params.course_id).once('value', (courses) => {
         courses.forEach((course) => {
-          console.log(course);
           this.courses.push({
             id: course.child('id').val(),
-            pdftitle:course.child('pdftitle').val(),
-            pdf:course.child('pdf').val(),
-            pdfcover: course.child('pdfcover').val(),
-            pdfdescription: course.child('pdfdescription').val(),
-            pdfcreateddate:new Date(course.child('pdfcreateddate').val()).toDateString(),
+            pdftitle:course.child('title').val(),
+            pdf:course.child('file').val(),
+            pdfcover: course.child('cover').val(),
+            pdfdescription: course.child('description').val(),
+            pdfcreateddate:new Date(course.child('date').val()).toDateString(),
+            type:course.child('type')
           })
           this.pdfids.push(course.child('id').val());
         })
