@@ -67,7 +67,6 @@
                   <v-btn text  @click="updateSelectedItem(course)">Delete</v-btn>
                   <v-btn text  @click="openEditDialog(course)">Edit</v-btn>
                   <router-link class="secondary-content" v-bind:to="{ name: 'viewcourse', params: { course_id: course.id }}"><i class="fa fa-eye"></i></router-link>
-                  <router-link class="secondary-content" v-bind:to="{ name: 'addpdf', params: { course_id: course.id }}"><i class="fa fa-plus"></i></router-link>
 
                 </v-card-actions>
               </v-card>
@@ -197,8 +196,8 @@ export default{
        this.dialog=false;
        firebase.database().ref().child('pdfs/').child(this.$route.params.course_id).child(this.clickeditem.id).set(null).then(snap=>{
          this.showSnack("green","deleted course");
-         let i = courses.map(item => item.id).indexOf(this.clickeditem.id) // find index of your object
-         courses.splice(i, 1)
+         this.courses.splice(this.pdfids.indexOf(this.clickeditem.id),1);
+
        });
      },
      showSnack(color,text){
@@ -251,9 +250,8 @@ export default{
             pdfdescription: course.child('pdfdescription').val(),
             pdfcreateddate:new Date(course.child('pdfcreateddate').val()).toDateString(),
           })
-
+          this.pdfids.push(course.child('id').val());
         })
-       this.courses=this.courses.reverse();
       });
 
 

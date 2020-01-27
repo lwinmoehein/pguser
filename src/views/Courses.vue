@@ -32,7 +32,7 @@
               >
                 <v-list-item three-line>
                   <v-list-item-content>
-                    <div class="overline mb-4">OVERLINE</div>
+                    <div class="overline mb-4">Course</div>
                     <v-list-item-title class="headline mb-1">{{course.coursetitle}}</v-list-item-title>
                     <v-list-item-subtitle>{{course.coursedescription}}</v-list-item-subtitle>
                     <v-list-item-subtitle v-text="course.coursecreateddate"></v-list-item-subtitle>
@@ -187,6 +187,10 @@ export default{
        this.clickeditem=course;
        this.deleteButtonClicked();
      },
+     EditCourse(course){
+       
+     }
+     ,
      cancelDialog(){
        this.dialog=false;
        this.dialogtext='';
