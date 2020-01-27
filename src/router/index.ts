@@ -7,9 +7,8 @@ import AddNewCourse from '../views/AddNewCourse.vue';
 import AddNewPDF from '../views/AddPDF.vue';
 import AddNewVideo from '../views/AddVideo.vue';
 import AddNewAudio from '../views/AddAudio.vue';
-
+import ViewPdf from '../views/ViewPdf.vue';
 import ViewCourse from '../views/ViewCourse.vue';
-
 Vue.use(VueRouter);
 
 export default new VueRouter({
@@ -45,6 +44,11 @@ export default new VueRouter({
       path: '/:course_id',
       name: 'addvideo',
       component: AddNewVideo
+    },
+    {
+      path: '/:pdfurl',
+      name: 'viewpdf',
+      component: ViewPdf
     },
     {
       path: '/:course_id',

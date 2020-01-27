@@ -35,7 +35,8 @@
     >
       <v-app-bar-nav-icon @click.stop="toggleMenu"></v-app-bar-nav-icon>
 
-      <v-toolbar-title>Vue News</v-toolbar-title>
+      <v-toolbar-title>Knowledge World <v-icon dark>mdi-book</v-icon>
+</v-toolbar-title>
 
     </v-app-bar>
 

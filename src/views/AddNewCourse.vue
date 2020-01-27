@@ -22,6 +22,14 @@
                </v-btn>
              </v-snackbar>
     <h1 class="headline">[[Add New Course]]</h1>
+    <v-btn  @click="$router.go(-1)" bottom
+                dark
+                fab
+                right
+                class="ma-12"
+                fixed color="primary">
+         <v-icon dark>mdi-arrow-left</v-icon>
+       </v-btn>
   <v-form v-model="valid">
   <v-container>
     <v-dialog v-model="loading" fullscreen full-width>

@@ -74,7 +74,7 @@
 
                 <v-card-actions>
                   <v-btn text  @click="updateSelectedItem(course)">Delete</v-btn>
-                  <router-link class="secondary-content" v-bind:to="{ name: 'viewcourse', params: { course_id: course.id }}"><i class="fa fa-eye"></i></router-link>
+                  <v-btn class="ma-1"  ><a :href="course.pdf">View</a></v-btn>
 
                 </v-card-actions>
               </v-card>
