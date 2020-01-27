@@ -32,7 +32,7 @@
               >
                 <v-list-item three-line>
                   <v-list-item-content>
-                    <div class="overline mb-4">OVERLINE</div>
+                    <div class="overline mb-4">Ebook(pdf)</div>
                     <v-list-item-title class="headline mb-1">{{course.pdftitle}}</v-list-item-title>
                     <v-list-item-subtitle>{{course.pdfdescription}}</v-list-item-subtitle>
                     <v-list-item-subtitle v-text="course.pdfcreateddate"></v-list-item-subtitle>
@@ -235,7 +235,8 @@ export default{
       editdialog:false,
       coursetitle:null,
       coursedescription:null,
-      courseimage:null
+      courseimage:null,
+      pdfids:[],
   }
   },
   mounted(){

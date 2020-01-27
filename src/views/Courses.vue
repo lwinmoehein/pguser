@@ -195,9 +195,12 @@ export default{
        this.dialogtext='';
        this.dialog=false;
        firebase.database().ref().child('courses/'+this.clickeditem.id).set(null).then(snap=>{
-         this.showSnack("green","deleted course");
-         this.courses.splice(this.index,1);
+         firebase.database().ref().child('pdfs/'+this.clickeditem.id).set(null).then(snap=>{
+           this.showSnack("green","deleted course");
+           this.courses.splice(this.courseids.indexOf(this.clickeditem.id),1);
+         });
        });
+
      },
      showSnack(color,text){
        this.color=color;
@@ -233,7 +236,8 @@ export default{
       editdialog:false,
       coursetitle:null,
       coursedescription:null,
-      courseimage:null
+      courseimage:null,
+      courseids:[],
   }
   },
   mounted(){
@@ -246,10 +250,10 @@ export default{
             coursetitle: course.child('coursetitle').val(),
             coursedescription: course.child('coursedescription').val(),
             coursecreateddate:new Date(course.child('coursecreateddate').val()).toDateString(),
-          })
+          });
+          this.courseids.push(course.child('id').val());
 
         })
-       this.courses=this.courses.reverse();
       });
 
 
