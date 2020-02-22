@@ -9,6 +9,8 @@ import AddNewVideo from '../views/AddVideo.vue';
 import AddNewAudio from '../views/AddAudio.vue';
 import ViewPdf from '../views/ViewPdf.vue';
 import ViewCourse from '../views/ViewCourse.vue';
+import Home from '../views/Home.vue';
+import NewPost from '../views/NewPost.vue';
 Vue.use(VueRouter);
 
 export default new VueRouter({
@@ -16,15 +18,28 @@ export default new VueRouter({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
-      name: 'posts',
-      component: Posts
-    },
-    {
       path: '/courses',
       name: 'courses',
-      component: Courses
+      component: Courses,
     },
+    {
+      path: '/',
+      name: 'home',
+      component: Home,
+    },
+    {
+      path: '/',
+      name: 'newpost',
+      component: NewPost,
+    }
+
+    // },
+    // {
+    //   path: '/courses',
+    //   name: 'courses',
+    //   component: Courses
+    // },
+    ,
     {
       path: '/favorites',
       name: 'favorites',

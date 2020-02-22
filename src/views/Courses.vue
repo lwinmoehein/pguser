@@ -1,34 +1,12 @@
 <template>
   <v-container>
-                <v-snackbar
-               v-model="snackbar"
-               :bottom="y === 'bottom'"
-               :color="color"
-               :left="x === 'left'"
-               :multi-line="mode === 'multi-line'"
-               :right="x === 'right'"
-               :timeout="timeout"
-               :top="y === 'top'"
-               :vertical="mode === 'vertical'"
-                >
-               {{ text }}
-               <v-btn
-                 dark
-                 text
-                 @click="snackbar = false"
-               >
-                 Close
-               </v-btn>
-             </v-snackbar>
     <h1 class="headline">Available Courses</h1>
-
       <v-list>
             <v-card   v-for="course in courses"
               :key="course.id"
                 class="mx-auto"
                 max-width="600"
                 outlined
-
               >
                 <v-list-item three-line>
                   <v-list-item-content>
@@ -62,42 +40,14 @@
                              </template>
                       </v-img>
                 </v-list-item-avatar>
-                </v-list-item>
+              </v-list-item>
 
                 <v-card-actions>
                   <v-btn class="ma-1" color="primary" dark text  @click="updateSelectedItem(course)">Delete</v-btn>
                   <v-btn class="ma-1" color="primary" dark text  @click="openEditDialog(course)">Edit</v-btn>
-                  <v-btn class="ma-1"  > <router-link class="secondary-content" v-bind:to="{ name: 'viewcourse', params: { course_id: course.id }}">View Course</router-link></v-btn>
-                  <!-- <router-link class="secondary-content" v-bind:to="{ name: 'addpdf', params: { course_id: course.id }}"><i class="fa fa-plus"></i></router-link> -->
-                  <!---add menus -->
+                  <v-btn class="ma-1" color="primary" dark text :to="{ name: 'viewcourse', params: { course_id: course.id }}" >View Course</v-btn>
 
-                    <v-menu  top offset-y >
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        color="primary"
-                        dark
-                        v-on="on"
-                      >
-                        Add
-                      </v-btn>
-                    </template>
-
-                    <v-list>
-                      <v-list-item color="primary"
-                        @click="addPdfClicked">
-                        <router-link class="secondary-content" v-bind:to="{ name: 'addpdf', params: { course_id: course.id }}">Add PDF</router-link>
-
-                      </v-list-item>
-                      <v-list-item color="primary"
-                        @click="addVideoClicked">
-                        <router-link class="secondary-content" v-bind:to="{ name: 'addvideo', params: { course_id: course.id }}">Add Video</router-link>
-                      </v-list-item>
-                      <v-list-item color="primary"
-                        @click="addAudioClicked">
-                        <router-link class="secondary-content" v-bind:to="{ name: 'addaudio', params: { course_id: course.id }}">Add Audio</router-link>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
+                  <AddContentMenu :courseid="course.id"/>
                 </v-card-actions>
               </v-card>
 
@@ -125,16 +75,6 @@
             <v-container>
             <v-form v-model="valid">
             <v-container>
-              <v-dialog v-model="loading" fullscreen full-width>
-                <v-container fluid fill-height style="background-color: rgba(255, 255, 255, 0.5);">
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      indeterminate
-                      color="primary">
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
-              </v-dialog>
                  <v-row>
                    <v-col
                     cols="12"
@@ -212,11 +152,16 @@
 </v-container>
 </template>
 <script>
+import store from '../store/';
+import * as type from '../store/mutationTypes/types';
 import { uuid } from 'vue-uuid';
 import firebase from 'firebase';
+import AddContentMenu from '../components/AddContentMenu.vue';
 export default{
   name:'courses',
-
+  components:{
+    AddContentMenu
+  },
   methods:{
      onAddBtnClicked(){
        this.$router.replace('addcourse');
@@ -230,12 +175,12 @@ export default{
        this.deleteButtonClicked();
      },
      EditCourse(course){
-       this.loading=true;
+       this.sho
        if(!(this.courseimage==null || this.coursetitle==null ||this.coursedescription==null)){
-         this.loading=true;
+         this.showLoading();
          var file =this.courseimage;
          firebase.storage().ref('courses/thumbs/'+uuid.v4()+'.jpg').put(file).then(snapshot=> {
-         this.loading=false;
+         this.closeLoading();
          snapshot.ref.getDownloadURL().then(downloadURL=> {
            this.courses[this.courseids.indexOf(this.clickeditem.id)].courseimage=downloadURL;
            firebase.database().ref().child('courses/'+this.clickeditem.id).update({
@@ -244,7 +189,7 @@ export default{
              coursedescription:this.coursedescription,
              coursecreateddate:firebase.database.ServerValue.TIMESTAMP
            });
-           this.loading=false;
+           this.closeLoading();
            this.editdialog=false;
            this.showSnack("green","course edited");
            });
@@ -270,12 +215,6 @@ export default{
        });
 
      },
-     showSnack(color,text){
-       this.color=color;
-       this.text=text;
-       this.snackbar=true;
-     },
-
      timestampToDate(timestamp){
        var offsetVal = timestamp || 0;
        var serverTime = Date.now() + offsetVal;
@@ -289,6 +228,24 @@ export default{
        this.courseimagetemp=course.courseimage;
        this.clickeditem=course;
      },
+     showSnack(color,text){
+       store.dispatch({
+         type: type.ShowToast,
+         toasttitle: text,
+         toastcolor:color
+       })
+     },
+     showLoading(color,text){
+       store.dispatch({
+         type: type.ShowLoading,
+       })
+     },
+     closeLoading(color,text){
+       store.dispatch({
+         type: type.CloseLoading,
+
+       })
+     },
 
   },
   data(){
@@ -297,9 +254,6 @@ export default{
       dialog:false,
       dialogtext:"Course Name: ",
       clickeditem:null,
-      snackbar:false,
-      text:'hello',
-      color:'',
       index:0,
       editdialog:false,
       coursetitle:null,
@@ -307,7 +261,6 @@ export default{
       courseimage:null,
       courseimagetemp:null,
       courseids:[],
-      loading:false,
       items: [
        { title: 'add pdf' },
        { title: 'add audio' },
@@ -317,9 +270,9 @@ export default{
   }
   },
   mounted(){
+    this.showLoading();
     firebase.database().ref().child('courses').once('value', (courses) => {
         courses.forEach((course) => {
-          console.log(course);
           this.courses.push({
             id: course.child('id').val(),
             courseimage:course.child('courseimage').val(),
@@ -328,6 +281,7 @@ export default{
             coursecreateddate:new Date(course.child('coursecreateddate').val()).toDateString(),
           });
           this.courseids.push(course.child('id').val());
+          this.closeLoading();
 
         })
       });

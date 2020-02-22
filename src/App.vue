@@ -1,5 +1,7 @@
 <template>
   <v-app>
+    <Toast/>
+    <LoadingDialog/>
 
     <TopToolbar></TopToolbar>
     <v-content>
@@ -10,7 +12,7 @@
       color="deep-purple accent-4"
       dark
       dismissible
-      >Mobile App Coming Soon!!!
+      >App is under development!!!
       </v-alert>
        <router-view></router-view>
      </v-content>
@@ -20,28 +22,35 @@
 </template>
 
 <script >
-  import { Component, Vue } from 'vue-property-decorator';
   import TopToolbar from './components/TopToolbar.vue';
+  import Toast from './components/Toast.vue';
+  import LoadingDialog from './components/LoadingDialog.vue';
   import BottomNav from './components/BottomNav.vue';
+  import store from './store/';
+  import * as type from './store/mutationTypes/types';
+  import { mapState } from 'vuex';
+
+  import { Component, Vue } from 'vue-property-decorator';
+
   import firebase from 'firebase';
   import firebaseConfig from './config/dbconfig.js';
-  firebase.initializeApp(firebaseConfig);
-//  import firebase from 'firebase';
-//  import firebaseConfig from './config/dbconfig.js';
 
-  //firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
+
 
   @Component({
     components: {
       TopToolbar,
       BottomNav,
+      Toast,
+      LoadingDialog
+
     },
     methods :{
-      getdata () {
-        // firebase.database().ref('/users/' + 'one').on('value', (snapshot) => {
-        //    console.log(snapshot.val().username);
-        // })
-      }
+
+    },
+    mounted(){
+
     }
   })
   export default class extends Vue {

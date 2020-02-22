@@ -2,7 +2,10 @@
 
   <v-container>
     <h1 class="headline">[[Favourites]]</h1>
-    Content is coming to this mobile app very soon!
+    <Counter/>
   </v-container>
 
 </template>
+<script>
+
+  </script>

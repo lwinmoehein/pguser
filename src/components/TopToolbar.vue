@@ -8,20 +8,20 @@
 
     >
       <v-list dense>
-        <v-list-item @click="doNothing">
+        <v-list-item @click="courses">
           <v-list-item-action>
-            <v-icon>settings</v-icon>
+          <v-icon material>mdi-book</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Settings</v-list-item-title>
+            <v-list-item-title>Courses</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item @click="doNothing">
+        <v-list-item @click="addcourse">
           <v-list-item-action>
-            <v-icon>help</v-icon>
+           <v-icon>mdi-plus</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Help</v-list-item-title>
+            <v-list-item-title>Add Courses</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -35,7 +35,7 @@
     >
       <v-app-bar-nav-icon @click.stop="toggleMenu"></v-app-bar-nav-icon>
 
-      <v-toolbar-title>Knowledge World <v-icon dark>mdi-book</v-icon>
+      <v-toolbar-title>Knowledge World<v-icon dark>mdi-book</v-icon>(free Knowledge)
 </v-toolbar-title>
 
     </v-app-bar>
@@ -51,7 +51,13 @@
     toggleMenu(): void {
       this.showMenu = !this.showMenu;
     }
-    doNothing(): void {
+    courses(): void {
+      this.$router.replace('courses');
+
+    }
+    addcourse(): void {
+      this.$router.replace('addcourse');
+
     }
   }
 </script>
